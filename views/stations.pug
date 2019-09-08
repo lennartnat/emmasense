@@ -1,0 +1,43 @@
+extends layout
+
+block content
+
+	if devices.length
+		script var devices = !{JSON.stringify(devices)};
+
+	.container
+		.row
+			h5
+				span.glyphicon.glyphicon-leaf
+				span  Sensor Stations
+			hr
+		.row
+			ul.list-group
+				- a = 1;
+				each device in devices
+					- minsSinceLastAqi = device.aqi? (new Date() - device.aqi.date)/1000/60 : 0;
+					li.list-group-item
+						//if minsSinceLastAqi < 5
+							span.badge.color-green Online
+						//else
+							span.badge.color-gray Offline
+						span.badge.font-shadow(id='badge'+(a-1)) #{ device.aqi? Math.max(device.aqi.index_co, device.aqi.index_no2) : 0 }
+						a(href="/sensor/" + device.identification)
+							h6.list-group-item-heading #{ a } #{ device.identification }
+							p.list-group-item-text #{ device.address }
+							if session.username
+								span.list-group-item-text S/N: 
+								a.btn.btn-xs.btn-show-sn(data-toggle='modal' data-a=a) Show
+							- a++
+
+	.modal.fade#modal-serial
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(data-dismiss='modal' aria-hidden='true') &times;
+					h5.modal-title Serial Number
+				.modal-body(ng-controller='SerialController')
+					span#ajax-spinner
+					h3.text-center {{ serialNumber }}
+
+	script(src='/javascripts/aqi_displays.js')

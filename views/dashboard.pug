@@ -1,0 +1,172 @@
+extends layout
+
+block content
+
+	if sensor_data.length
+		- var ln          = sensor_data.length;
+		- var edt         = sensor_data[(sensor_data.length - 1)].date;
+		- var envi_date   = (edt.getMonth() + 1) + '/' + edt.getDate() + '/' + edt.getFullYear();
+		- envi_date       += ' ' + edt.getHours() + ':' + edt.getMinutes();
+
+	if !sensor_data.length
+		- sensor_data = [{'date': new Date(), 'co': 0.001, 'c6h6': 0.001, 'no2': 0.001, 'temperature': 0, 'humidity': 0, 'pressure': 0}];
+		- var ln = 1;
+
+	if index_data.length
+		script var idata = !{JSON.stringify(index_data)};
+	else
+		script var idata = [{date: new Date(), index_co: 0, index_no2: 0}]
+
+	script var device = !{JSON.stringify(device)};
+	script var sdata = !{JSON.stringify(sensor_data)};
+
+	if session.username
+		script var sess = !{JSON.stringify(session.username)};
+	else
+		script var sess = null;
+
+	.container-narrow
+		h5
+			span.glyphicon.glyphicon-stats
+			span  Dashboard
+		hr
+
+	.container-narrow
+		.row
+			.col-md-4.col-sm-6
+				.panel.panel-horizontal#aqi-panel.panel-top
+					#aqi-panel-heading.panel-heading
+						span AQI
+						h1#aqi-idx
+					.panel-body
+						.progress
+								#aqi-progbar.progress-bar
+						table.table-card
+							tr.table-card-border-bottom
+								th Updated
+								td#aqi-date-time
+							tr.table-card-border-bottom
+								th Pollutant
+								td#aqi-pollutant
+							tr
+								th Category
+								td
+									span#aqi-category.label.font-shadow
+
+			.col-md-4.col-sm-6
+				.panel.panel-top
+					#aqi-advisory-heading.panel-heading
+						h5.font-white.font-shadow
+							span.glyphicon.glyphicon-exclamation-sign
+							span  &nbsp;AQI Advisory
+					.panel-body#aqi-advisory-body
+						span#aqi-advisory
+
+			.col-md-4.col-sm-6
+				.panel.panel-top#panel-envi
+					.panel-heading
+						.row
+							.col-xs-12.font-size-md
+								span.glyphicon.glyphicon-map-marker.font-red
+								span  #{device.identification}
+						
+					.panel-body
+						.row#row-envi
+							.col-xs-4.col-border-right#col-temp
+								span#temperature #{sensor_data[ln-1].temperature} °
+								br
+								i C
+							.col-xs-4.col-border-right#col-hum
+								span#humidity #{sensor_data[ln-1].humidity} %
+								br
+								i  RH
+							.col-xs-4#col-press
+								span#pressure #{sensor_data[ln-1].pressure}
+								br
+								i  Pa
+						.row#row-envi-foot.fill-dark
+							.col-xs-12
+								span Last update:
+								i#envi-fact-date #{envi_date}
+
+		.row
+			.col-sm-9
+				.panel#data-panel
+					.panel-heading
+						ul.nav.nav-tabs#tabs-chart-table
+							li.active
+								a(data-toggle='tab' href='#graph') GRAPH
+							li
+								a#table-btn(data-toggle='tab' href='#table') TABULATE
+							.tab-icon-right(data-toggle='tooltip' title='Download')
+								span.glyphicon.glyphicon-save#export-btn(data-toggle='modal')
+								
+
+					.panel-body#panel-body-graph
+						.tab-content
+							#graph.tab-pane.fade.in.active
+								#chart
+							#table.tab-pane.fade
+								table.table.table-hover.table-bordered.table-condensed#table-fill
+				
+			.col-sm-3
+				.panel
+					.panel-heading.fill-dark
+						span.font-white.panel-title
+							span AQI: CO
+					.panel-body
+						#aqi-co
+						#aqi-bar-co
+
+			.col-sm-3
+				.panel
+					.panel-heading.fill-dark
+						h5.font-white.panel-title
+							span AQI: NOx
+					.panel-body
+						#aqi-no2
+						#aqi-bar-no2
+							
+	.modal.fade#modal-export
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(data-dismiss='modal' aria-hidden='true') &times;
+					h4.modal-title Export Data
+				.modal-body
+					form#export-form.form-horizontal(action='export-data/'+device.identification method='POST' target='_blank')
+						fieldset
+							.well.well-lg
+								.row
+									label.control-label.col-xs-1 Date
+									.col-xs-9#export-date-picker-div
+										input#export-date-picker.form-control(name='exportdate' form='export-form' required)
+
+				.modal-footer
+					button.btn.btn-primary.fill-dark(type='submit' form='export-form') Download
+
+
+	script(src='/javascripts/toolScripts.js')
+
+
+	script(src='/plugins/d3/d3.min.js')
+	script(src='/plugins/c3/c3.min.js')
+	script(src='/javascripts/chart.js')
+
+	//- script(src='https://cdn.datatables.net/v/bs/dt-1.10.12/cr-1.3.2/r-2.1.0/datatables.min.js')
+	script(src='/plugins/datatables/datatables.min.js')
+
+	script(src='/javascripts/table.js')
+
+	script(src='/socket.io/socket.io.js')
+	script(src='/javascripts/socket.js')
+
+	script(src='/javascripts/aqi.js')
+
+	script(src='/plugins/moment/moment.min.js')
+	script(src='/plugins/daterangepicker/jquery.daterangepicker.min.js')
+
+	script(src='/javascripts/export.js')
+
+	script.
+		$('[data-toggle="tooltip"]').tooltip();

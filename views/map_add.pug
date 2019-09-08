@@ -1,0 +1,35 @@
+extends layout
+
+block content
+
+	if devices
+		script var device_locations = !{JSON.stringify(devices)};
+
+	.container(ng-controller='EmmaController')
+		.row
+			.col-sm-6
+				.panel
+					.panel-body
+						#map-sensor
+			.col-sm-6
+				.panel
+					.panel-heading
+						h5 Add Device
+						span#ajax-spinner
+					.panel-body
+						form(method='POST' action='addDevice')
+							.form-group
+								input.form-control(type='text' name='identification' placeholder='Device Identification' required)
+							.form-group
+								input.form-control(type='text' name='address' placeholder='Address' value='{{ address }}' readonly required)
+							.form-group
+								input.form-control(type='text' name='latitude' placeholder='Latitude' value='{{ latitude }}' readonly required)
+							.form-group
+								input.form-control(type='text' name='longitude' placeholder='Longitude' value='{{ longitude }}' readonly required)
+							.form-group
+								button.btn.btn-primary.fill-dark(type='submit')
+									span.glyphicon.glyphicon-plus
+									span  Add EMMA
+
+	script(src='/plugins/leaflet/leaflet.js')
+	script(src='/javascripts/map_admin.js')

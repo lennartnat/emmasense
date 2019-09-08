@@ -1,0 +1,18 @@
+extends layout
+
+block content
+
+	if devices
+		script var devices = !{JSON.stringify(devices)};
+
+	.container
+		.panel
+			.panel-heading
+				h5
+					span.glyphicon.glyphicon-globe
+					span  Sensor Locations
+			.panel-body
+				#map
+
+	script(src='/plugins/leaflet/leaflet.js')
+	script(src='/javascripts/map.js')

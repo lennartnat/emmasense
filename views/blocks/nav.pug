@@ -1,0 +1,54 @@
+nav.navbar.navbar-dark.navbar-fixed-top
+    .container-fluid
+        .navbar-header
+            button.navbar-toggle(type='button' data-toggle='collapse' data-target='#nav-emma')
+                span.glyphicon.glyphicon-menu-hamburger
+            #nav-logo-floating.navbar-left
+                if !session.username
+                    a(href='/')
+                        img(src='/images/logos/logo-nav.png' height='75px')
+                else
+                    a(href='/admin')
+                        img(src='/images/logos/logo-nav.png' height='75px')
+
+            //span.navbar-left
+                span#nav-title-floating EMMA
+                    span#nav-subtitle-floating  Sense
+
+        .collapse.navbar-collapse#nav-emma
+            ul.nav.navbar-nav.navbar-right
+                li
+                    if session.username
+                        a(href='/admin/deploy') Deploy
+                li
+                    a(href='/sensors/stations') Stations
+                li
+                    a(href='/sensors/map') Locate
+                li
+                    if !session.username
+                        a#login-btn(data-toggle='modal')
+                            span.glyphicon.glyphicon-lock
+                    if session.username
+                        a(href='/users/logout')
+                            span.glyphicon.glyphicon-log-out
+
+if !session.username
+    .modal.fade#modal-login
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(data-dismiss='modal' aria-hidden='true') &times;
+                    h5.modal-title
+                        span.glyphicon.glyphicon-cog
+                .modal-body(ng-controller='LoginController')
+                    form
+                        .alert.alert-danger#alert-login-error
+                            strong {{ error }}
+                        .form-group
+                            input.form-control(type='text' name='uname' placeholder='ID' ng-model='uname')
+                        .form-group
+                            input.form-control(type='password' name='pword' placeholder='Key' ng-model='pword')
+                        .form-group
+                            button.btn.btn-primary.btn-sm.btn-block.fill-dark#signin-btn Login
+
+script(src='/javascripts/login.js')
