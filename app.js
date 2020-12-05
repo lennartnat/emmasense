@@ -25,7 +25,7 @@ var sensor       = require('./routes/sensor');
 var app = express();
 
 var mdb_url_local = 'mongodb://127.0.0.1/sensor';
-var mdb_url_mlab  = 'mongodb://lennarto:lenn4rt@ds139567.mlab.com:39567/sensor';
+var mdb_url_mlab  = 'mongodb+srv://lennarto:lenn4rt@sensor.kludc.mongodb.net/sensor?retryWrites=true&w=majority';
 mongoose.connect(mdb_url_mlab);
 
 
